@@ -99,7 +99,7 @@ class _ModernMahasiswaCardState extends State<ModernMahasiswaCard>
                   ),
                   child: Center(
                     child: Text(
-                      widget.mahasiswa.nama.substring(0, 1).toUpperCase(),
+                      widget.mahasiswa.name.isNotEmpty ? widget.mahasiswa.name.substring(0, 1).toUpperCase() : '?',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 26,
@@ -120,7 +120,7 @@ class _ModernMahasiswaCardState extends State<ModernMahasiswaCard>
                         children: [
                           Expanded(
                             child: Text(
-                              widget.mahasiswa.nama,
+                              widget.mahasiswa.name,
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -134,19 +134,15 @@ class _ModernMahasiswaCardState extends State<ModernMahasiswaCard>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: widget.mahasiswa.isAktif
-                                  ? Colors.green.withOpacity(0.1)
-                                  : Colors.red.withOpacity(0.1),
+                              color: Colors.blue.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              widget.mahasiswa.isAktif ? 'Aktif' : 'Non-Aktif',
+                              'ID: ${widget.mahasiswa.id}',
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: widget.mahasiswa.isAktif
-                                    ? Colors.green[800]
-                                    : Colors.red[800],
+                                color: Colors.blue[800],
                               ),
                             ),
                           )
@@ -154,8 +150,8 @@ class _ModernMahasiswaCardState extends State<ModernMahasiswaCard>
                       ),
                       const SizedBox(height: 8),
                       _buildInfoRow(
-                        Icons.numbers_outlined,
-                        'NIM: ${widget.mahasiswa.nim}',
+                        Icons.email_outlined,
+                        widget.mahasiswa.email,
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -163,24 +159,10 @@ class _ModernMahasiswaCardState extends State<ModernMahasiswaCard>
                         children: [
                           Expanded(
                             child: _buildInfoRow(
-                              Icons.school_outlined,
-                              widget.mahasiswa.jurusan,
+                              Icons.comment_outlined,
+                              widget.mahasiswa.body,
                             ),
                           ),
-                          Row(
-                            children: [
-                              Icon(Icons.star_rounded,
-                                  size: 14, color: Colors.orange[400]),
-                              const SizedBox(width: 4),
-                              Text(
-                                widget.mahasiswa.ipk.toString(),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ],

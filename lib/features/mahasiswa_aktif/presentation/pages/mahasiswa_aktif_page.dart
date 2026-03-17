@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_lanjutan/core/widgets/widgets.dart';
 import 'package:riverpod_lanjutan/features/mahasiswa_aktif/presentation/providers/mahasiswa_aktif_provider.dart';
-import 'package:riverpod_lanjutan/features/mahasiswa/presentation/widgets/mahasiswa_widget.dart';
+import 'package:riverpod_lanjutan/features/mahasiswa_aktif/presentation/widgets/mahasiswa_aktif_widget.dart';
 
 class MahasiswaAktifPage extends ConsumerWidget {
   const MahasiswaAktifPage({super.key});
@@ -33,12 +33,9 @@ class MahasiswaAktifPage extends ConsumerWidget {
             ref.read(mahasiswaAktifNotifierProvider.notifier).refresh();
           },
         ),
-        data: (mahasiswaList) {
-          if (mahasiswaList.isEmpty) {
-            return const Center(child: Text("Tidak ada mahasiswa aktif."));
-          }
-          return MahasiswaListView(
-            mahasiswaList: mahasiswaList,
+        data: (postList) {
+          return MahasiswaAktifListView(
+            postList: postList,
             onRefresh: () async {
               ref.invalidate(mahasiswaAktifNotifierProvider);
             },

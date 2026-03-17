@@ -1,27 +1,41 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_lanjutan/features/mahasiswa/data/models/mahasiswa_model.dart';
-import 'package:riverpod_lanjutan/features/mahasiswa/presentation/providers/mahasiswa_provider.dart';
+import 'package:riverpod_lanjutan/features/mahasiswa_aktif/data/models/mahasiswa_aktif_model.dart';
+import 'package:riverpod_lanjutan/features/mahasiswa_aktif/data/repositories/mahasiswa_aktif_repository.dart';
 
-// AsyncNotifier Provider untuk state mahasiswa aktif
-class MahasiswaAktifNotifier extends AsyncNotifier<List<MahasiswaModel>> {
-  @override
-  Future<List<MahasiswaModel>> build() async {
-    return _fetchMahasiswaAktif();
+// Repository Provider
+final mahasiswaAktifRepositoryProvider = Provider<MahasiswaAktifRepository>((ref) {
+  return MahasiswaAktifRepository();
+});
+
+// StateNotifier untuk mengelola state mahasiswa aktif
+class MahasiswaAktifNotifier extends StateNotifier<AsyncValue<List<MahasiswaAktifModel>>> {
+  final MahasiswaAktifRepository _repository;
+
+  MahasiswaAktifNotifier(this._repository) : super(const AsyncValue.loading()) {
+    loadMahasiswaAktifList();
   }
 
-  Future<List<MahasiswaModel>> _fetchMahasiswaAktif() async {
-    final repository = ref.read(mahasiswaRepositoryProvider);
-    final allMahasiswa = await repository.getMahasiswaList();
-    return allMahasiswa.where((mhs) => mhs.isAktif).toList();
+  Future<void> loadMahasiswaAktifList() async {
+    state = const AsyncValue.loading();
+    try {
+      final data = await _repository.getMahasiswaAktifList();
+      state = AsyncValue.data(data);
+    } catch (error, stackTrace) {
+      state = AsyncValue.error(error, stackTrace);
+    }
   }
 
   Future<void> refresh() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _fetchMahasiswaAktif());
+    await loadMahasiswaAktifList();
   }
 }
 
+// Mahasiswa Aktif Notifier Provider
 final mahasiswaAktifNotifierProvider =
-    AsyncNotifierProvider<MahasiswaAktifNotifier, List<MahasiswaModel>>(() {
-  return MahasiswaAktifNotifier();
-});
+    StateNotifierProvider.autoDispose<
+      MahasiswaAktifNotifier,
+      AsyncValue<List<MahasiswaAktifModel>>
+    >((ref) {
+      final repository = ref.watch(mahasiswaAktifRepositoryProvider);
+      return MahasiswaAktifNotifier(repository);
+    });

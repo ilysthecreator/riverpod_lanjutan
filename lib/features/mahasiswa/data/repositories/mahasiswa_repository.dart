@@ -1,59 +1,20 @@
+import 'dart:convert';
 import 'package:riverpod_lanjutan/features/mahasiswa/data/models/mahasiswa_model.dart';
+import 'package:http/http.dart' as http;
 
 class MahasiswaRepository {
   Future<List<MahasiswaModel>> getMahasiswaList() async {
-    // Simulasi delay jaringan
-    await Future.delayed(const Duration(seconds: 1));
+    final response = await http.get(
+      Uri.parse('https://jsonplaceholder.typicode.com/comments'),
+      headers: {'Accept': 'application/json'},
+    );
 
-    return [
-      MahasiswaModel(
-        nim: '434241100',
-        nama: 'Ody Dzakwan Berwin',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2024',
-        ipk: 3.85,
-        isAktif: true,
-      ),
-      MahasiswaModel(
-        nim: '434241079',
-        nama: 'Irfan Nuha',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2024',
-        ipk: 3.40,
-        isAktif: true,
-      ),
-      MahasiswaModel(
-        nim: '434241012',
-        nama: 'M. Surya Prakoso',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2020',
-        ipk: 3.92,
-        isAktif: true,
-      ),
-      MahasiswaModel(
-        nim: '434241099',
-        nama: 'M. Fadhil Ilyas',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2024',
-        ipk: 2.80,
-        isAktif: false,
-      ),
-      MahasiswaModel(
-        nim: '434241055',
-        nama: 'Nabil Hakim',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2024',
-        ipk: 3.75,
-        isAktif: true,
-      ),
-      MahasiswaModel(
-        nim: '434251122',
-        nama: 'Kafka Nafisa Maulidiyah',
-        jurusan: 'D4 Teknik Informatika',
-        angkatan: '2025',
-        ipk: 3.10,
-        isAktif: true,
-      ),
-    ];
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+    }
   }
 }
+
