@@ -1,20 +1,22 @@
-import 'dart:convert';
 import 'package:riverpod_lanjutan/features/mahasiswa/data/models/mahasiswa_model.dart';
-import 'package:http/http.dart' as http;
+import 'package:riverpod_lanjutan/core/network/dio_client.dart';
+import 'package:dio/dio.dart';
 
 class MahasiswaRepository {
-  Future<List<MahasiswaModel>> getMahasiswaList() async {
-    final response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/comments'),
-      headers: {'Accept': 'application/json'},
-    );
+  final DioClient _dioClient;
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
+  MahasiswaRepository({DioClient? dioClient})
+      : _dioClient = dioClient ?? DioClient();
+
+  Future<List<MahasiswaModel>> getMahasiswaList() async {
+    try {
+      final Response response = await _dioClient.dio.get('/comments');
+      final List<dynamic> data = response.data;
       return data.map((json) => MahasiswaModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+    } on DioException catch (e) {
+      throw Exception(
+        'Gagal memuat data mahasiswa: ${e.response?.statusCode} - ${e.message}',
+      );
     }
   }
 }
-
